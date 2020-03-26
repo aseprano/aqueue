@@ -16,11 +16,17 @@
   "main": "index.js",
   "devDependencies": {
     "coveralls": "^3.0.11",
+    "jasmine": "^3.5.0",
     "standard": "^14.3.3"
   },
   "scripts": {
-    "test": "standard && node test",
+    "test": "jasmine",
     "lint": "standard"
+  },
+  "standard": {
+    "env": [
+      "jest"
+    ]
   },
   "repository": {
     "type": "git",
