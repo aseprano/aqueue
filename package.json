@@ -1,0 +1,30 @@
+{
+  "name": "aqueue",
+  "version": "1.0.0",
+  "description": "an asynchronous queue for node",
+  "keywords": [
+    "queue",
+    "aqueue",
+    "asynchronous",
+    "async",
+    "task",
+    "job",
+    "jobs",
+    "tasks",
+    "consumer"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aseprano/aqueue.git"
+  },
+  "author": "Antonio Seprano",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aseprano/aqueue/issues"
+  },
+  "homepage": "https://github.com/aseprano/aqueue#readme"
+}
