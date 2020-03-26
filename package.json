@@ -14,8 +14,13 @@
     "consumer"
   ],
   "main": "index.js",
+  "devDependencies": {
+    "coveralls": "^3.0.11",
+    "standard": "^14.3.3"
+  },
   "scripts": {
-    "test": "test"
+    "test": "standard && node test",
+    "lint": "standard"
   },
   "repository": {
     "type": "git",
