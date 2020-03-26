@@ -1,5 +1,6 @@
 {
   "name": "aqueue",
+  "type": "library",
   "version": "1.0.0",
   "description": "an asynchronous queue for node",
   "keywords": [
@@ -18,6 +19,9 @@
     "coveralls": "^3.0.11",
     "jasmine": "^3.5.0",
     "standard": "^14.3.3"
+  },
+  "engines": {
+      "node": ">=10"
   },
   "scripts": {
     "test": "jasmine",
