@@ -1,7 +1,7 @@
 {
   "name": "@darkbyte/aqueue",
   "type": "library",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "an asynchronous queue for node",
   "keywords": [
     "queue",
@@ -21,7 +21,7 @@
     "standard": "^14.3.3"
   },
   "engines": {
-      "node": ">=10"
+      "node": ">=8"
   },
   "scripts": {
     "test": "jasmine",
