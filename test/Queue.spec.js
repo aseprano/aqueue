@@ -1,4 +1,4 @@
-const Queue = require("../");
+const { Queue } = require("..");
 
 describe('test queue', () => {
 
@@ -20,6 +20,37 @@ describe('test queue', () => {
 
         q.pop().then((n) => expect(n).toEqual(3));
         q.pop().then((n) => expect(n).toEqual(14));
+    });
+
+    it('invokes the onEmpty callback when the last item is removed', (done) => {
+        const q = new Queue();
+        q.push(10);
+        q.onEmpty((queue) => {
+            expect(queue).toBe(q);
+            done();
+        });
+
+        q.pop();
+    });
+
+    it('does not invoke the onEmpty callback when an item is removed but queue is not empty', (done) => {
+        const q = new Queue();
+        q.push(10);
+        q.push(20);
+
+        let numberOfCallbackInvocations = 0;
+
+        q.onEmpty(() => {
+            numberOfCallbackInvocations++;
+        });
+
+        q.pop();
+        q.pop();
+
+        setTimeout(() => {
+            expect(numberOfCallbackInvocations).toEqual(1);
+            done();
+        }, 0);
     });
 
     it('makes the client wait for items if the queue is empty', async (done) => {

@@ -4,7 +4,9 @@ module.exports.QueueConsumer = QueueConsumer
 function Queue() {
     const items = [];
     const pendingConsumers = [];
-    
+    let onEmptyCallback = () => {};
+    let thisQueue = this;
+
     function queueIsEmpty() {
         return items.length === 0;
     }
@@ -30,7 +32,13 @@ function Queue() {
     }
 
     function dequeueItem() {
-        return items.shift();
+        const ret = items.shift();
+
+        if (queueIsEmpty()) {
+            setTimeout(() => onEmptyCallback(thisQueue), 0);
+        }
+
+        return ret;
     }
 
     this.push = function(newItem) {
@@ -53,17 +61,20 @@ function Queue() {
         return items.length;
     }
 
+    this.onEmpty = function(callback) {
+        onEmptyCallback = callback;
+    }
+
 }
 
 function QueueConsumer(queue) {
     let isConsuming = false;
     
-    function popItemsFromQueue(queue, callback) {
+    async function popItemsFromQueue(queue, callback) {
+        const asyncCallback = async (item) => callback(item);
+
         return queue.pop()
-            .then((item) => {
-                callback(item);
-                return popItemsFromQueue(queue, callback);
-            });
+            .then((item) => asyncCallback(item).then(() => popItemsFromQueue(queue, callback)));
     }
 
     this.startConsuming = function(callback) {
