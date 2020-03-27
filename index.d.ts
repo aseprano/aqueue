@@ -1,8 +1,8 @@
-// Type definitions for @darkbyte/aqueue 1.0.3
+// Type definitions for @darkbyte/aqueue 1.0.4
 // Project: https://github.com/aseprano/aqueue
 // Definitions by: Antonio Seprano <https://github.com/aseprano>
 
-export interface Queue<T> {
+declare class Queue<T> {
 
     push(): void;
 
