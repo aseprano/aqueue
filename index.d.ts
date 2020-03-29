@@ -2,18 +2,25 @@
 // Project: https://github.com/aseprano/aqueue
 // Definitions by: Antonio Seprano <https://github.com/aseprano>
 
-declare class Queue<T> {
-
+interface Queue<T> {
     push(newItem: T): void;
-
     pop(): Promise<T>;
-
 }
 
-declare class QueueConsumer<T> {
+interface QueueConstructor {
+    new(): Queue<any>;
+    new<T>(): Queue<T>;
+    readonly prototype: Queue<any>;
+}
+declare var Queue: QueueConstructor;
 
-    constructor(queue: Queue<T>);
-
+interface QueueConsumer<T> {
     startConsuming(callback: (item: T) => void): void;
-
 }
+
+interface QueueConsumerConstructor {
+    new(queue: Queue<any>): QueueConsumer<any>;
+    new<T>(queue: Queue<T>): QueueConsumer<T>;
+    readonly prototype: QueueConsumer<any>;
+}
+declare var QueueConsumer: QueueConsumerConstructor;
