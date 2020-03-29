@@ -1,8 +1,9 @@
 {
   "name": "@darkbyte/aqueue",
-  "type": "library",
-  "version": "1.3.0",
   "description": "an asynchronous queue for node",
+  "type": "library",
+  "version": "1.3.1",
+  "private": false,
   "keywords": [
     "queue",
     "aqueue",
