@@ -14,7 +14,9 @@
     "tasks",
     "consumer"
   ],
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": ["lib/**/*"],
   "devDependencies": {
     "coveralls": "^3.0.11",
     "jasmine": "^3.5.0",
@@ -25,7 +27,11 @@
   },
   "scripts": {
     "test": "jasmine",
-    "lint": "standard"
+    "lint": "standard",
+    "build": "tsc",
+    "prepare" : "npm run build",
+    "version": "git add -A src",
+    "postversion": "git push && git push --tags"
   },
   "standard": {
     "env": [

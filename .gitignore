@@ -1,7 +1,8 @@
 .DS_Store
 .idea
+.vscode
+.nyc_output
 node_modules
 coverage
-.vscode
+lib
 test/bundle.js
-.nyc_output
