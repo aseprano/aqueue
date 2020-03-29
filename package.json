@@ -2,7 +2,7 @@
   "name": "@darkbyte/aqueue",
   "description": "an asynchronous queue for node",
   "type": "library",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "private": false,
   "keywords": [
     "queue",
@@ -17,20 +17,22 @@
   ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "files": ["lib/**/*"],
+  "files": [
+    "lib/**/*"
+  ],
   "devDependencies": {
     "coveralls": "^3.0.11",
     "jasmine": "^3.5.0",
     "standard": "^14.3.3"
   },
   "engines": {
-      "node": ">=8"
+    "node": ">=8"
   },
   "scripts": {
     "test": "jasmine",
     "lint": "standard",
     "build": "tsc",
-    "prepare" : "npm run build",
+    "prepare": "npm run build",
     "version": "git add -A src",
     "postversion": "git push && git push --tags"
   },
