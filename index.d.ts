@@ -1,4 +1,4 @@
-// Type definitions for @darkbyte/aqueue 1.1.0
+// Type definitions for @darkbyte/aqueue 1.2.2
 // Project: https://github.com/aseprano/aqueue
 // Definitions by: Antonio Seprano <https://github.com/aseprano>
 
