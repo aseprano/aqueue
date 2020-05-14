@@ -1,25 +1,70 @@
 import { Queue } from "./Queue";
+import { Consumable } from "./Consumable";
 
 type Callback<T> = (item: T) => Promise<void>;
 
 export class QueueConsumer<T> {
-    private isConsuming = false;
-    
+    private started = false;
+    private paused = false;
+    private popping = false;
+    private callable: Callback<T> = async () => {};
+
     constructor(private queue: Queue<T>) {}
 
-    private popItemsFromQueue(queue: Queue<T>, callback: Callback<T>): Promise<void> {
-        const asyncCallback = async (item:  T) => callback(item);
-
-        return queue.pop()
-            .then((item) => asyncCallback(item).then(() => this.popItemsFromQueue(queue, callback)));
+    private alreadyStarted(): boolean {
+        return this.started;
     }
 
-    async startConsuming(callback: Callback<T>) {
-        if (this.isConsuming) {
-            return Promise.reject(new Error('QueueConsumer is already consuming a queue'));
+    private isPaused(): boolean {
+        return this.paused;
+    }
+
+    private isPopping(): boolean {
+        return this.popping;
+    }
+
+    private async popOneItem(): Promise<Consumable<T>> {
+        this.popping = true;
+
+        return this.queue.pop()
+            .then((item) => {
+                this.popping = false;
+                return item;
+            });
+    }
+
+    private popItemsFromQueue(): Promise<void> {
+        return this.popOneItem()
+            .then((consumableItem) => {
+                if (this.isPaused()) {
+                    consumableItem.reject();
+                } else {
+                    return this.callable(consumableItem.getItem())
+                        .then(() => consumableItem.consume(), () => consumableItem.reject())
+                        .then(() => this.isPaused() ? undefined : this.popItemsFromQueue());
+                }
+            });
+    }
+
+    public startConsuming(callback: Callback<T>) {
+        if (this.alreadyStarted()) {
+            throw new Error('QueueConsumer already started');
         }
 
-        return this.popItemsFromQueue(this.queue, callback);
+        this.callable = async (item:  T) => callback(item);
+        this.popItemsFromQueue();
+    }
+
+    public pause() {
+        this.paused = true;
+    }
+
+    public resume() {
+        this.paused = false;
+
+        if (!this.isPopping()) {
+            this.popItemsFromQueue();
+        }
     }
 
 }

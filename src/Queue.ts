@@ -1,3 +1,5 @@
+import { Consumable } from "./Consumable";
+
 type ItemConsumer<T> = (item: T) => void;
 type OnEmptyCallbackType<T> = (queue: Queue<T>) => void;
 
@@ -39,6 +41,14 @@ export class Queue<T> {
         return ret!;
     }
 
+    private pushFront(newItem: T): void {
+        if (this.thereArePendingConsumers()) {
+            this.wakeUpConsumer(newItem);
+        } else {
+            this.items.unshift(newItem);
+        }
+    }
+
     public push(newItem: T): void {
         if (this.thereArePendingConsumers()) {
             this.wakeUpConsumer(newItem);
@@ -47,12 +57,11 @@ export class Queue<T> {
         }
     }
 
-    async pop(): Promise<T> {
-        if (this.queueIsEmpty() || this.thereArePendingConsumers()) {
-            return this.enqueueConsumer();
-        } else {
-            return Promise.resolve(this.dequeueItem());
-        }
+    async pop(): Promise<Consumable<T>> {
+        return (this.queueIsEmpty() || this.thereArePendingConsumers() ?
+            this.enqueueConsumer() :
+            Promise.resolve(this.dequeueItem())
+        ).then((item) => new Consumable(item, (item) => this.pushFront(item)));
     }
 
     public length() {
