@@ -4,6 +4,11 @@ Asynchronous locking queue for node.
 
 ## Examples
 #### Using the queue
+
+A Queue for types T returns items of type Consumable<T>, that is: items that can be rejected or consumed.
+When the consume() or the reject() method are invoked on a queue item, it is marked as completed and no more actions can be taken on it.
+When an item is rejected, it is put back at the head of the queue, ready to be extracted with a subsequent call to pop() queue method.
+
 ```javascript
 const { Queue } = require('./');
 
@@ -35,8 +40,6 @@ Got item: 42
 
 #### Rejecting an item
 
-The queue returns items that can be rejected or consumed. When the consume() or the reject() method is invoked on a queue item, it is marked as completed and no more actions can be taken on it.
-When an item is rejected, it is put back at the head of the queue, ready to be extracted with the next call to pop().
 In the following example, a queue of messages must be delivered through a connection.
 If the connection is closed, you don't want to effectively consume the items from the queue. Rather, you put them back to be processed whenever the connection becomes available again:
 
@@ -56,14 +59,16 @@ queue.pop()
 ```
 
 #### Consuming the queue automagically
+A generic QueueConsumer class is provided to make it even simpler to consume a queue.
+
 ``` TypeScript
 const { Queue, QueueConsumer } = require('./');
 
 const queue = new Queue<number>(); // queue is empty
 const consumer = new QueueConsumer(queue);
 
-// The consumer will automatically pop the items from
-// the queue, one by one
+// The consumer will automatically start popping the items from
+// the queue, one by one, and will invoke your callback:
 consumer.startConsuming((item: number) => {
     console.debug(`Got item: ${item}`);
 });
@@ -92,14 +97,14 @@ const queue: Queue<Message> = new Queue();
 const consumer = new QueueConsumer(queue);
 
 consumer.startConsuming((item: Message) => {
-    // use the consumed message
+    // use the extracted item, throw an exception if you can't handle it
 });
 
 // late on...
-consumer.pause(); // from now on, the consumer callback is no longer invoked
+consumer.pause(); // from now on, the callback is no longer invoked
 
 // late on...
-consumer.resume(); // from now on the consumer callback gets invoked again
+consumer.resume(); // from now on the callback gets invoked again
 
 ```
 
