@@ -21,13 +21,14 @@ export class Consumable<T> {
         this.terminated = true;
     }
 
-    public getItem(): T {
+    public getContent(): T {
         this.checkIsValid();
         return this.item;
     }
 
-    public consume(): void {
+    public consume(): T {
         this.markTerminated();
+        return this.item;
     }
 
     public reject(): void {

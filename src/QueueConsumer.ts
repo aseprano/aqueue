@@ -39,7 +39,7 @@ export class QueueConsumer<T> {
                 if (this.isPaused()) {
                     consumableItem.reject();
                 } else {
-                    return this.callable(consumableItem.getItem())
+                    return this.callable(consumableItem.getContent())
                         .then(() => consumableItem.consume(), () => consumableItem.reject())
                         .then(() => this.isPaused() ? undefined : this.popItemsFromQueue());
                 }
