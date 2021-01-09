@@ -9,7 +9,9 @@ export class QueueConsumer<T> {
     private popping = false;
     private callable: Callback<T> = async () => {};
 
-    constructor(private queue: Queue<T>) {}
+    constructor(
+        private readonly queue: Queue<T>
+    ) {}
 
     private alreadyStarted(): boolean {
         return this.started;
