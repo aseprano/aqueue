@@ -2,7 +2,7 @@
   "name": "@darkbyte/aqueue",
   "description": "an asynchronous queue for node",
   "type": "library",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "private": false,
   "keywords": [
     "queue",
