@@ -35,10 +35,14 @@ export class Queue<T> {
         const ret = this.items.shift();
 
         if (this.queueIsEmpty()) {
-            setTimeout(() => this.onEmptyCallback(this), 0);
+            this.invokeOnEmptyCallback();
         }
 
         return ret!;
+    }
+
+    private invokeOnEmptyCallback() {
+        setTimeout(() => this.onEmptyCallback(this), 0);
     }
 
     private pushFront(newItem: T): void {
@@ -52,11 +56,16 @@ export class Queue<T> {
     public push(newItem: T): void {
         if (this.thereArePendingConsumers()) {
             this.wakeUpConsumer(newItem);
+            this.invokeOnEmptyCallback();
         } else {
             this.enqueueItem(newItem);
         }
     }
 
+    /**
+     * Extracts an item from the queue.
+     * If no item is available, the promise is held until a new item is pushed into the queue.
+     */
     async pop(): Promise<Consumable<T>> {
         return (this.queueIsEmpty() || this.thereArePendingConsumers() ?
             this.enqueueConsumer() :

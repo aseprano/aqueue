@@ -7,7 +7,7 @@ export class QueueConsumer<T> {
     private started = false;
     private paused = false;
     private popping = false;
-    private callable: Callback<T> = async () => {};
+    private callback: Callback<T> = () => {};
 
     constructor(
         private readonly queue: Queue<T>
@@ -35,15 +35,15 @@ export class QueueConsumer<T> {
             });
     }
 
-    private popItemsFromQueue(): Promise<void> {
+    private async popItemsFromQueue(callback: Callback<T>): Promise<void> {
         return this.popOneItem()
             .then((consumableItem) => {
                 if (this.isPaused()) {
                     consumableItem.reject();
                 } else {
-                    return this.callable(consumableItem.getContent())
+                    return callback(consumableItem.getContent())
                         .then(() => consumableItem.consume(), () => consumableItem.reject())
-                        .then(() => this.isPaused() ? undefined : this.popItemsFromQueue());
+                        .then(() => this.isPaused() ? undefined : this.popItemsFromQueue(callback));
                 }
             });
     }
@@ -53,8 +53,8 @@ export class QueueConsumer<T> {
             throw new Error('QueueConsumer already started');
         }
 
-        this.callable = async (item:  T) => callback(item);
-        this.popItemsFromQueue();
+        this.callback = callback;
+        this.popItemsFromQueue(callback);
     }
 
     public pause() {
@@ -65,7 +65,7 @@ export class QueueConsumer<T> {
         this.paused = false;
 
         if (!this.isPopping()) {
-            this.popItemsFromQueue();
+            this.popItemsFromQueue(this.callback);
         }
     }
 
