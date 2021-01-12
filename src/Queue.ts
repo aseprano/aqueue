@@ -13,12 +13,19 @@ export class Queue<T> {
     }
 
     private thereArePendingConsumers(): boolean {
-        return this.pendingConsumers.length !== 0;
+        return this.pendingConsumers.length > 0;
     }
 
-    private wakeUpConsumer(item: T): void {
-        const consumer: (item: T) => void = this.pendingConsumers.shift()!;
-        consumer(item);
+    private deliverItemToWaitingConsumer(newItem: T): boolean {
+        const consumer = this.pendingConsumers.shift();
+
+        if (!consumer) {
+            return false;
+        }
+
+        setImmediate(() => consumer(newItem));
+
+        return true;
     }
 
     private enqueueConsumer(): Promise<T> {
@@ -42,20 +49,19 @@ export class Queue<T> {
     }
 
     private invokeOnEmptyCallback() {
-        setTimeout(() => this.onEmptyCallback(this), 0);
+        setImmediate(() => this.onEmptyCallback(this));
     }
 
     private pushFront(newItem: T): void {
         if (this.thereArePendingConsumers()) {
-            this.wakeUpConsumer(newItem);
+            this.deliverItemToWaitingConsumer(newItem);
         } else {
             this.items.unshift(newItem);
         }
     }
 
     public push(newItem: T): void {
-        if (this.thereArePendingConsumers()) {
-            this.wakeUpConsumer(newItem);
+        if (this.deliverItemToWaitingConsumer(newItem)) {
             this.invokeOnEmptyCallback();
         } else {
             this.enqueueItem(newItem);
@@ -77,6 +83,13 @@ export class Queue<T> {
         return this.items.length;
     }
 
+    /**
+     * Registers a callback to be invoked as soon as the queue becomes empty.
+     * When the queue becomes empty (i.e.: the last item has been removed), the callback is invoked and he queue is passed as an argument.
+     * The callback is run asynchronously, hence the queue could be no longer empty the when the callback is run.
+     * 
+     * @param callback 
+     */
     public onEmpty(callback: OnEmptyCallbackType<T>) {
         this.onEmptyCallback = callback;
     }

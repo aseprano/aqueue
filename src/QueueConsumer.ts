@@ -7,7 +7,7 @@ export class QueueConsumer<T> {
     private started = false;
     private paused = false;
     private popping = false;
-    private callback: Callback<T> = () => {};
+    private callback: Callback<T> = async () => {};
 
     constructor(
         private readonly queue: Queue<T>

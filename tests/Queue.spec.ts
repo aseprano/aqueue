@@ -2,7 +2,7 @@ import { Queue } from '../src/Queue';
 
 describe('Queue', () => {
 
-    it('starts empty', () => {
+    it('starts with no items', () => {
         const q = new Queue<number>();
         expect(q.length()).toBe(0);
     });
@@ -16,6 +16,35 @@ describe('Queue', () => {
         const item = await q.pop();
         expect(item.consume()).toBe(10);
         expect(q.length()).toBe(0);
+    });
+
+    it('invokes the custom onEmpty callback after popping the last item', (done) => {
+        const queue = new Queue<number>();
+        let itemHasBeenPoppedOut = false;
+
+        queue.onEmpty(() => {
+            expect(itemHasBeenPoppedOut).toBe(true);
+            done();
+        });
+
+        queue.push(2);
+
+        queue.pop()
+            .then(() => {
+                itemHasBeenPoppedOut = true;
+            });
+    });
+
+    it('invokes the custom onEmpty callback after delivering a new item to a waiting consumer', (done) => {
+        const queue = new Queue<number>();
+
+        queue.onEmpty(() => {
+            expect(queue.length()).toBe(0);
+            done();
+        });
+
+        queue.pop(); // starts waiting
+        queue.push(2); // wakes up the consumer
     });
 
     it('makes the caller wait for a new item when the queue is empty', (done) => {
@@ -56,15 +85,6 @@ describe('Queue', () => {
 
         setTimeout(() => queue.push(3), 500);
         setTimeout(() => queue.push(14), 600);
-    });
-
-    it('invokes the custom callback when the queue becomes empty', (done) => {
-        const queue = new Queue<number>();
-
-        queue.onEmpty(done);
-
-        queue.pop(); // should wait indefinitely
-        queue.push(1);
     });
 
     it('invokes the custom callback every time the queue becomes empty', (done) => {
